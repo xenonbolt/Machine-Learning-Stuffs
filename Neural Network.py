@@ -1,22 +1,26 @@
 import numpy as np
 import nnfs
+from nnfs.datasets import spiral_data
 
 nnfs.init()
 
-X = [[1,2,3,2.5],
-     [2.0,5.0,-1.0,2.0],
-     [-1.5,2.7,3.3,-0.8]] #inputs
+# X = [[1,2,3,2.5],
+#      [2.0,5.0,-1.0,2.0],
+#      [-1.5,2.7,3.3,-0.8]] #inputs
 
-inputs = [0, 2, -1, 3.3, 2.7, 1.1, 2.2, -100]
-output=[]
 
-for i in inputs:
-    # if i>0:
-    #     output.append(i)
-    # elif i <= 0:
-    #     output.append(0)
-    output.append(max(0,i))
-print(output)
+# X, y = spiral_data(100,3) #Spiral Data Input
+
+# inputs = [0, 2, -1, 3.3, 2.7, 1.1, 2.2, -100] #Inputs for describing the Activation function
+# output=[]
+
+# for i in inputs:
+#     # if i>0:
+#     #     output.append(i)
+#     # elif i <= 0:
+#     #     output.append(0)
+#     output.append(max(0,i))
+# # print(output)
 
 # weights = [[0.2,0.8,-0.5,1.0],
 #             [0.5,-0.91,0.26,-0.5],
@@ -57,12 +61,38 @@ class Activation_ReLU:
     def forward(self, inputs):
         self.output= np.maximum(0, inputs)
 
-layer1 = Layer_Dense(4,5)
-layer2 = Layer_Dense(5,2)
+class Activation_Softmax():
+    def forward(self, inputs):
+        exp_values = np.exp(inputs) - np.max(inputs, axis=1, keepdims=True)
+        probabilities = exp_values / np.sum(exp_values, axis=1, keepdims= True)
+        self.output = probabilities
 
-layer1.forward(X)
-# print(layer1.output)
-layer2.forward(layer1.output)
-print(layer2.output) 
+# layer1 = Layer_Dense(2,5)
+# activation1 = Activation_ReLU()
+# # layer2 = Layer_Dense(5,2)
 
+# layer1.forward(X)
+# # # print(layer1.output)
+# # layer2.forward(layer1.output)
+# # print(layer2.output) 
+# # print(layer1.output)
+# activation1.forward(layer1.output)
+# print(activation1.output)
+
+X,y = spiral_data(samples = 100, classes = 3)
+
+dense1 = Layer_Dense(2, 3)
+activation1 = Activation_ReLU()
+
+dense2 = Layer_Dense(3, 3)
+activation2= Activation_Softmax()
+
+dense1.forward(X)
+activation1.forward(dense1.output)
+
+dense2.forward(activation1.output)
+activation2.forward(dense2.output)
+
+print(activation2.output[:5])
+#As initialisation are random the probability will be almost equal
 
